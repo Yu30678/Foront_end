@@ -44,14 +44,14 @@ export async function GET() {
       ],
       message: '成功取得商品列表',
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         status: 500,
         data: null,
         message: '伺服器錯誤',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

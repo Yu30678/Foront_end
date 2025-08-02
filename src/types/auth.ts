@@ -1,6 +1,6 @@
 // API回應基本結構
 export interface ApiResponse<T = any> {
-  code: number;
+  status: number;
   data: T;
   message: string;
 }

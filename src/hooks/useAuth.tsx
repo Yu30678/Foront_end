@@ -141,13 +141,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
       // 檢查response的結構
       if (response) {
-        console.log('AuthProvider: response.code:', response.code)
+        console.log('AuthProvider: response.status:', response.status)
         console.log('AuthProvider: response.data:', response.data)
         console.log('AuthProvider: response.message:', response.message)
       }
 
-      // 檢查API回傳格式 {code, data, message} - API攔截器已將status轉換為code
-      if (response && response.code === 200 && response.data) {
+      // 檢查API回傳格式 {status, data, message}
+      if (response && response.status === 200 && response.data) {
         console.log('AuthProvider: 進入成功邏輯分支')
         console.log('AuthProvider: response.data內容:', response.data)
 
@@ -178,8 +178,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         console.log('AuthProvider: 登入失敗 - 條件不滿足')
         console.log('AuthProvider: response存在嗎?', !!response)
         console.log(
-          'AuthProvider: response.code === 200?',
-          response?.code === 200,
+          'AuthProvider: response.status === 200?',
+          response?.status === 200,
         )
         console.log('AuthProvider: response.data存在嗎?', !!response?.data)
       }
@@ -198,7 +198,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       const response = await authAPI.adminLogin(credentials)
       console.log('AuthProvider: API回應:', response)
 
-      if (response && response.code === 200 && response.data) {
+      if (response && response.status === 200 && response.data) {
         const user: Member = {
           member_id: response.data.member_id,
           name: response.data.name || credentials.account,
@@ -232,7 +232,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     try {
       const response = await authAPI.register(userData)
 
-      if (response && response.code === 200) {
+      if (response && response.status === 200) {
         return {
           success: true,
           message: response.message || '註冊成功，請登入',

@@ -16,13 +16,15 @@ export async function POST(request: NextRequest) {
           data: null,
           message: '帳號和密碼為必填',
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
     // 模擬管理員登入驗證
-    if ((body.account === 'admin' && body.password === 'admin123') || 
-        (body.account === '000' && body.password === '000')) {
+    if (
+      (body.account === 'admin' && body.password === 'admin123') ||
+      (body.account === '000' && body.password === '000')
+    ) {
       const user = {
         userId: 1,
         account: body.account,
@@ -44,16 +46,16 @@ export async function POST(request: NextRequest) {
         data: null,
         message: '帳號或密碼錯誤',
       },
-      { status: 401 }
+      { status: 401 },
     )
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         status: 500,
         data: null,
         message: '伺服器錯誤',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
       ],
       message: '成功取得會員列表',
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         status: 500,
@@ -70,7 +70,13 @@ export async function POST(request: NextRequest) {
   try {
     const body: Member = await request.json()
 
-    if (!body.name || !body.password || !body.phone || !body.address || !body.email) {
+    if (
+      !body.name ||
+      !body.password ||
+      !body.phone ||
+      !body.address ||
+      !body.email
+    ) {
       return NextResponse.json(
         {
           status: 400,
@@ -95,7 +101,7 @@ export async function POST(request: NextRequest) {
       data: newMember,
       message: '會員新增成功',
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         status: 500,
@@ -136,7 +142,7 @@ export async function PUT(request: NextRequest) {
       data: updatedMember,
       message: '會員更新成功',
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         status: 500,
@@ -168,7 +174,7 @@ export async function DELETE(request: NextRequest) {
       data: { member_id: body.member_id },
       message: '會員刪除成功',
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         status: 500,

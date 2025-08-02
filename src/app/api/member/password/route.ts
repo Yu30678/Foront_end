@@ -17,28 +17,31 @@ export async function PUT(request: NextRequest) {
           data: null,
           message: '會員編號、舊密碼和新密碼為必填',
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/member/password`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/member/password`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
       },
-      body: JSON.stringify(body),
-    })
+    )
 
     const result = await response.json()
     return NextResponse.json(result)
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         status: 500,
         data: null,
         message: '伺服器錯誤',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

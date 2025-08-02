@@ -4,6 +4,7 @@ interface Member {
   member_id: number
   name: string
   email: string
+  password: string
   phone: string
   address: string
   create_at: string
@@ -21,22 +22,24 @@ export async function GET(request: NextRequest) {
           data: null,
           message: '會員編號為必填',
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/member?member_id=${memberId}`)
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/member?member_id=${memberId}`,
+    )
     const result = await response.json()
-    
+
     return NextResponse.json(result)
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         status: 500,
         data: null,
         message: '伺服器錯誤',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -45,14 +48,20 @@ export async function POST(request: NextRequest) {
   try {
     const body: Member = await request.json()
 
-    if (!body.name || !body.email || !body.password || !body.phone || !body.address) {
+    if (
+      !body.name ||
+      !body.email ||
+      !body.password ||
+      !body.phone ||
+      !body.address
+    ) {
       return NextResponse.json(
         {
           status: 400,
           data: null,
           message: '所有欄位皆為必填',
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -70,14 +79,14 @@ export async function POST(request: NextRequest) {
       data: newMember,
       message: '會員註冊成功',
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         status: 500,
         data: null,
         message: '伺服器錯誤',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -93,7 +102,7 @@ export async function PUT(request: NextRequest) {
           data: null,
           message: '會員編號為必填',
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -107,14 +116,14 @@ export async function PUT(request: NextRequest) {
 
     const result = await response.json()
     return NextResponse.json(result)
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         status: 500,
         data: null,
         message: '伺服器錯誤',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -130,7 +139,7 @@ export async function DELETE(request: NextRequest) {
           data: null,
           message: '會員編號為必填',
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -144,14 +153,14 @@ export async function DELETE(request: NextRequest) {
 
     const result = await response.json()
     return NextResponse.json(result)
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         status: 500,
         data: null,
         message: '伺服器錯誤',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

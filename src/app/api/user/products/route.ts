@@ -45,7 +45,7 @@ export async function GET() {
       ],
       message: '成功取得商品列表',
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         status: 500,
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
       data: newProduct,
       message: '商品新增成功',
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         status: 500,
@@ -129,7 +129,7 @@ export async function PUT(request: NextRequest) {
       data: updatedProduct,
       message: '商品更新成功',
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         status: 500,
@@ -161,7 +161,7 @@ export async function DELETE(request: NextRequest) {
       data: { product_id: body.product_id },
       message: '商品刪除成功',
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         status: 500,

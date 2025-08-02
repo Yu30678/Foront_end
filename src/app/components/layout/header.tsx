@@ -50,7 +50,7 @@ const adminLoginSchema = z.object({
 type LoginType = 'member' | 'admin'
 type FormType = 'login' | 'register'
 
-const getNavItems = (userType: string | undefined) => {
+const getNavItems = (userType: string | null | undefined) => {
   const baseItems = [
     { label: '首頁', href: '/' },
     { label: '產品', href: '/product' },
