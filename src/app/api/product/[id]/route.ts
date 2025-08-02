@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
-  _request: NextRequest,
-  context: { params: Promise<{ id: string }> },
+  request: NextRequest,
+  { params }: { params: { id: string } }
 ) {
   try {
-    const params = await context.params
     const productId = parseInt(params.id)
 
     const products = [
@@ -47,7 +46,7 @@ export async function GET(
       },
     ]
 
-    const product = products.find((p) => p.product_id === productId)
+    const product = products.find(p => p.product_id === productId)
 
     if (!product) {
       return NextResponse.json(
@@ -56,7 +55,7 @@ export async function GET(
           data: null,
           message: '商品不存在',
         },
-        { status: 404 },
+        { status: 404 }
       )
     }
 
@@ -65,14 +64,14 @@ export async function GET(
       data: product,
       message: '成功取得商品資料',
     })
-  } catch {
+  } catch (error) {
     return NextResponse.json(
       {
         status: 500,
         data: null,
         message: '伺服器錯誤',
       },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }
