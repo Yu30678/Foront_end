@@ -1,15 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-interface CartItem {
-  member_id: number
-  product_id: number
-  quantity: number
-  create_at: string
-  product_name: string
-  product_price: number
-  image_url: string
-}
-
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
@@ -22,22 +12,24 @@ export async function GET(request: NextRequest) {
           data: null,
           message: '會員編號為必填',
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart?member_id=${memberId}`)
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/cart?member_id=${memberId}`,
+    )
     const result = await response.json()
-    
+
     return NextResponse.json(result)
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         status: 500,
         data: null,
         message: '伺服器錯誤',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -53,7 +45,7 @@ export async function POST(request: NextRequest) {
           data: null,
           message: '會員編號、商品編號和數量為必填',
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -67,14 +59,14 @@ export async function POST(request: NextRequest) {
 
     const result = await response.json()
     return NextResponse.json(result)
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         status: 500,
         data: null,
         message: '伺服器錯誤',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -90,7 +82,7 @@ export async function PUT(request: NextRequest) {
           data: null,
           message: '會員編號、商品編號和數量為必填',
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -104,14 +96,14 @@ export async function PUT(request: NextRequest) {
 
     const result = await response.json()
     return NextResponse.json(result)
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         status: 500,
         data: null,
         message: '伺服器錯誤',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -129,24 +121,27 @@ export async function DELETE(request: NextRequest) {
           data: null,
           message: '會員編號和商品編號為必填',
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart?member_id=${memberId}&product_id=${productId}`, {
-      method: 'DELETE',
-    })
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/cart?member_id=${memberId}&product_id=${productId}`,
+      {
+        method: 'DELETE',
+      },
+    )
 
     const result = await response.json()
     return NextResponse.json(result)
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         status: 500,
         data: null,
         message: '伺服器錯誤',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

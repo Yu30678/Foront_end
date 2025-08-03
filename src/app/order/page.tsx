@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -16,7 +16,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
 import { Eye, ShoppingBag } from 'lucide-react'
@@ -47,27 +46,27 @@ export default function OrderPage() {
   const { authState } = useAuth()
   const router = useRouter()
 
-  useEffect(() => {
-    if (authState.isLoggedIn && authState.userType === 'member') {
-      loadOrders()
-    } else {
-      setIsLoading(false)
-    }
-  }, [authState])
-
-  const loadOrders = async () => {
+  const loadOrders = useCallback(async () => {
     try {
       setIsLoading(true)
       const response = await orderAPI.getOrders(authState.user?.member_id)
-      if (response.status === 200) {
-        setOrders(response.data || [])
+      if (response.code === 200) {
+        setOrders((response.data as Order[]) || [])
       }
     } catch (error) {
       console.error('載入訂單失敗:', error)
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [authState.user?.member_id])
+
+  useEffect(() => {
+    if (authState.isLoggedIn && authState.userType === 'member') {
+      loadOrders()
+    } else {
+      setIsLoading(false)
+    }
+  }, [authState, loadOrders])
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('zh-TW', {
@@ -79,7 +78,6 @@ export default function OrderPage() {
     })
   }
 
-
   const handleViewDetails = (order: Order) => {
     setSelectedOrder(order)
     setIsDialogOpen(true)
@@ -89,8 +87,8 @@ export default function OrderPage() {
     return (
       <div className="container mx-auto py-8">
         <Card>
-          <CardContent className="text-center py-12">
-            <ShoppingBag className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+          <CardContent className="py-12 text-center">
+            <ShoppingBag className="mx-auto mb-4 h-12 w-12 text-gray-400" />
             <p className="text-gray-500">請先登入會員帳號查看訂單</p>
             <Button className="mt-4" onClick={() => router.push('/')}>
               回到首頁
@@ -110,7 +108,7 @@ export default function OrderPage() {
   }
 
   return (
-    <div className="container mx-auto py-8 space-y-6">
+    <div className="container mx-auto space-y-6 py-8">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">我的訂單</h1>
         <Badge variant="outline">{orders.length} 筆訂單</Badge>
@@ -118,12 +116,10 @@ export default function OrderPage() {
 
       {orders.length === 0 ? (
         <Card>
-          <CardContent className="text-center py-12">
-            <ShoppingBag className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-            <p className="text-gray-500 mb-4">您還沒有任何訂單</p>
-            <Button onClick={() => router.push('/product')}>
-              開始購物
-            </Button>
+          <CardContent className="py-12 text-center">
+            <ShoppingBag className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+            <p className="mb-4 text-gray-500">您還沒有任何訂單</p>
+            <Button onClick={() => router.push('/product')}>開始購物</Button>
           </CardContent>
         </Card>
       ) : (
@@ -182,7 +178,9 @@ export default function OrderPage() {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-600">建立時間</p>
-                  <p className="text-lg">{formatDate(selectedOrder.create_at)}</p>
+                  <p className="text-lg">
+                    {formatDate(selectedOrder.create_at)}
+                  </p>
                 </div>
                 <div className="col-span-2">
                   <p className="text-sm font-medium text-gray-600">總金額</p>
@@ -195,8 +193,8 @@ export default function OrderPage() {
               {selectedOrder.order_details &&
                 selectedOrder.order_details.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-medium mb-3">訂單明細</h3>
-                    <div className="border rounded-lg overflow-hidden">
+                    <h3 className="mb-3 text-lg font-medium">訂單明細</h3>
+                    <div className="overflow-hidden rounded-lg border">
                       <Table>
                         <TableHeader>
                           <TableRow>

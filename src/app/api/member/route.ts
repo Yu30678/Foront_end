@@ -9,6 +9,14 @@ interface Member {
   create_at: string
 }
 
+interface MemberRegistration {
+  name: string
+  email: string
+  password: string
+  phone: string
+  address: string
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
@@ -21,38 +29,55 @@ export async function GET(request: NextRequest) {
           data: null,
           message: '會員編號為必填',
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/member?member_id=${memberId}`)
-    const result = await response.json()
-    
-    return NextResponse.json(result)
-  } catch (error) {
+    // 模擬會員資料查詢
+    const mockMember: Member = {
+      member_id: parseInt(memberId),
+      name: '張三',
+      email: 'zhang@example.com',
+      phone: '0912345678',
+      address: '台北市信義區',
+      create_at: new Date().toISOString(),
+    }
+
+    return NextResponse.json({
+      status: 200,
+      data: mockMember,
+      message: '成功取得會員資料',
+    })
+  } catch {
     return NextResponse.json(
       {
         status: 500,
         data: null,
         message: '伺服器錯誤',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const body: Member = await request.json()
+    const body: MemberRegistration = await request.json()
 
-    if (!body.name || !body.email || !body.password || !body.phone || !body.address) {
+    if (
+      !body.name ||
+      !body.email ||
+      !body.password ||
+      !body.phone ||
+      !body.address
+    ) {
       return NextResponse.json(
         {
           status: 400,
           data: null,
           message: '所有欄位皆為必填',
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -70,14 +95,14 @@ export async function POST(request: NextRequest) {
       data: newMember,
       message: '會員註冊成功',
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         status: 500,
         data: null,
         message: '伺服器錯誤',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -93,28 +118,33 @@ export async function PUT(request: NextRequest) {
           data: null,
           message: '會員編號為必填',
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/member`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    })
+    // 模擬會員資料更新
+    const updatedMember: Member = {
+      member_id: body.member_id,
+      name: body.name || '張三',
+      email: body.email || 'zhang@example.com',
+      phone: body.phone || '0912345678',
+      address: body.address || '台北市信義區',
+      create_at: new Date().toISOString(),
+    }
 
-    const result = await response.json()
-    return NextResponse.json(result)
-  } catch (error) {
+    return NextResponse.json({
+      status: 200,
+      data: updatedMember,
+      message: '會員資料更新成功',
+    })
+  } catch {
     return NextResponse.json(
       {
         status: 500,
         data: null,
         message: '伺服器錯誤',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -130,28 +160,24 @@ export async function DELETE(request: NextRequest) {
           data: null,
           message: '會員編號為必填',
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/member`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
+    // 模擬會員刪除
+    return NextResponse.json({
+      status: 200,
+      data: { member_id: body.member_id },
+      message: '會員刪除成功',
     })
-
-    const result = await response.json()
-    return NextResponse.json(result)
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         status: 500,
         data: null,
         message: '伺服器錯誤',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

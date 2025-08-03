@@ -76,12 +76,12 @@ export default function ProductsPage() {
         productAPI.getAdminProducts(),
         categoryAPI.getCategories(),
       ])
-      
-      if (productsResponse.status === 200) {
-        setProducts(productsResponse.data)
+
+      if (productsResponse.code === 200) {
+        setProducts(productsResponse.data as Product[])
       }
-      if (categoriesResponse.status === 200) {
-        setCategories(categoriesResponse.data)
+      if (categoriesResponse.code === 200) {
+        setCategories(categoriesResponse.data as Category[])
       }
     } catch (error) {
       console.error('載入資料失敗:', error)
@@ -105,8 +105,11 @@ export default function ProductsPage() {
     try {
       setIsUploading(true)
       const response = await uploadAPI.uploadImage(selectedFile)
-      if (response.status === 200) {
-        setFormData({ ...formData, image_url: response.data.fullUrl })
+      if (response.code === 200) {
+        setFormData({
+          ...formData,
+          image_url: (response.data as { fullUrl: string }).fullUrl,
+        })
         setSelectedFile(null)
         if (previewUrl) {
           URL.revokeObjectURL(previewUrl)
@@ -144,7 +147,7 @@ export default function ProductsPage() {
       } else {
         await productAPI.createProduct(productData)
       }
-      
+
       setIsDialogOpen(false)
       resetForm()
       loadData()
@@ -304,12 +307,12 @@ export default function ProductsPage() {
                 <div className="space-y-2">
                   {formData.image_url ? (
                     <div className="relative">
-                      <div className="w-32 h-32 relative border rounded">
+                      <div className="relative h-32 w-32 rounded border">
                         <Image
                           src={formData.image_url}
                           alt="商品圖片"
                           fill
-                          className="object-cover rounded"
+                          className="rounded object-cover"
                         />
                       </div>
                       <Button
@@ -332,12 +335,12 @@ export default function ProductsPage() {
                       />
                       {selectedFile && (
                         <div className="space-y-2">
-                          <div className="w-32 h-32 relative border rounded">
+                          <div className="relative h-32 w-32 rounded border">
                             <Image
                               src={previewUrl}
                               alt="預覽"
                               fill
-                              className="object-cover rounded"
+                              className="rounded object-cover"
                             />
                           </div>
                           <Button
@@ -378,7 +381,7 @@ export default function ProductsPage() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="text-center py-4">載入中...</div>
+            <div className="py-4 text-center">載入中...</div>
           ) : (
             <Table>
               <TableHeader>
@@ -399,16 +402,16 @@ export default function ProductsPage() {
                     <TableCell>{product.product_id}</TableCell>
                     <TableCell>
                       {product.image_url ? (
-                        <div className="w-12 h-12 relative">
+                        <div className="relative h-12 w-12">
                           <Image
                             src={product.image_url}
                             alt={product.name}
                             fill
-                            className="object-cover rounded"
+                            className="rounded object-cover"
                           />
                         </div>
                       ) : (
-                        <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center text-xs">
+                        <div className="flex h-12 w-12 items-center justify-center rounded bg-gray-200 text-xs">
                           無圖片
                         </div>
                       )}
@@ -416,9 +419,13 @@ export default function ProductsPage() {
                     <TableCell className="font-medium">
                       {product.name}
                     </TableCell>
-                    <TableCell>NT$ {Number(product.price).toLocaleString()}</TableCell>
+                    <TableCell>
+                      NT$ {Number(product.price).toLocaleString()}
+                    </TableCell>
                     <TableCell>{product.soh}</TableCell>
-                    <TableCell>{getCategoryName(product.category_id)}</TableCell>
+                    <TableCell>
+                      {getCategoryName(product.category_id)}
+                    </TableCell>
                     <TableCell>
                       <Badge
                         variant={product.is_active ? 'default' : 'secondary'}
@@ -426,7 +433,7 @@ export default function ProductsPage() {
                         {product.is_active ? '上架' : '下架'}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right space-x-2">
+                    <TableCell className="space-x-2 text-right">
                       <Button
                         variant="outline"
                         size="sm"

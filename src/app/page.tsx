@@ -1,12 +1,12 @@
-"use client";
+'use client'
 
-import { Button } from "@/components/ui/button";
-import { getAPI } from "@/lib/api";
+import { Button } from '@/components/ui/button'
+import { getAPI } from '@/lib/api'
 
 export default function Home() {
   return (
     <>
-      <Button onClick={() => getAPI("/product")}>Click me</Button>
+      <Button onClick={() => getAPI('/product')}>Click me</Button>
     </>
-  );
+  )
 }

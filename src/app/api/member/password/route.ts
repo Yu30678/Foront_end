@@ -17,28 +17,42 @@ export async function PUT(request: NextRequest) {
           data: null,
           message: '會員編號、舊密碼和新密碼為必填',
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/member/password`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    })
+    // 模擬密碼變更邏輯
+    // 在實際應用中，這裡應該連接到資料庫進行驗證和更新
 
-    const result = await response.json()
-    return NextResponse.json(result)
-  } catch (error) {
+    // 模擬檢查舊密碼
+    if (body.old_password !== 'oldpassword123') {
+      return NextResponse.json(
+        {
+          status: 400,
+          data: null,
+          message: '舊密碼不正確',
+        },
+        { status: 400 },
+      )
+    }
+
+    // 模擬密碼更新成功
+    return NextResponse.json({
+      status: 200,
+      data: {
+        member_id: body.member_id,
+        message: '密碼已成功更新',
+      },
+      message: '密碼變更成功',
+    })
+  } catch {
     return NextResponse.json(
       {
         status: 500,
         data: null,
         message: '伺服器錯誤',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

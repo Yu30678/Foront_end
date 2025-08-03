@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
           data: null,
           message: '電子郵件和密碼為必填',
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -44,16 +44,16 @@ export async function POST(request: NextRequest) {
         data: null,
         message: '電子郵件或密碼錯誤',
       },
-      { status: 401 }
+      { status: 401 },
     )
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         status: 500,
         data: null,
         message: '伺服器錯誤',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

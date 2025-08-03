@@ -151,13 +151,21 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         console.log('AuthProvider: 進入成功邏輯分支')
         console.log('AuthProvider: response.data內容:', response.data)
 
+        const data = response.data as {
+          member_id: number
+          name?: string
+          phone?: string
+          address?: string
+          create_at: string
+        }
+
         const user: Member = {
-          member_id: response.data.member_id,
-          name: response.data.name || credentials.email,
+          member_id: data.member_id,
+          name: data.name || credentials.email,
           email: credentials.email,
-          phone: response.data.phone || '',
-          address: response.data.address || '',
-          create_at: response.data.create_at,
+          phone: data.phone || '',
+          address: data.address || '',
+          create_at: data.create_at,
         }
 
         console.log('AuthProvider: 構建的user對象:', user)
@@ -199,13 +207,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       console.log('AuthProvider: API回應:', response)
 
       if (response && response.code === 200 && response.data) {
+        const adminData = response.data as {
+          member_id: number
+          name?: string
+          email?: string
+          phone?: string
+          address?: string
+          create_at: string
+        }
+
         const user: Member = {
-          member_id: response.data.member_id,
-          name: response.data.name || credentials.account,
-          email: response.data.email || credentials.account,
-          phone: response.data.phone || '',
-          address: response.data.address || '',
-          create_at: response.data.create_at,
+          member_id: adminData.member_id,
+          name: adminData.name || credentials.account,
+          email: adminData.email || credentials.account,
+          phone: adminData.phone || '',
+          address: adminData.address || '',
+          create_at: adminData.create_at,
         }
 
         const newAuthState = {

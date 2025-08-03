@@ -31,18 +31,25 @@ export default function AdminDashboard() {
   const loadDashboardData = async () => {
     try {
       setIsLoading(true)
-      const [membersRes, productsRes, ordersRes, categoriesRes] = await Promise.all([
-        authAPI.getMembers(),
-        productAPI.getAdminProducts(),
-        orderAPI.getOrders(),
-        categoryAPI.getCategories(),
-      ])
+      const [membersRes, productsRes, ordersRes, categoriesRes] =
+        await Promise.all([
+          authAPI.getMembers(),
+          productAPI.getAdminProducts(),
+          orderAPI.getOrders(),
+          categoryAPI.getCategories(),
+        ])
 
       setStats({
-        totalMembers: Array.isArray(membersRes.data) ? membersRes.data.length : 0,
-        totalProducts: Array.isArray(productsRes.data) ? productsRes.data.length : 0,
+        totalMembers: Array.isArray(membersRes.data)
+          ? membersRes.data.length
+          : 0,
+        totalProducts: Array.isArray(productsRes.data)
+          ? productsRes.data.length
+          : 0,
         totalOrders: Array.isArray(ordersRes.data) ? ordersRes.data.length : 0,
-        totalCategories: Array.isArray(categoriesRes.data) ? categoriesRes.data.length : 0,
+        totalCategories: Array.isArray(categoriesRes.data)
+          ? categoriesRes.data.length
+          : 0,
       })
     } catch (error) {
       console.error('載入儀表板資料失敗:', error)
@@ -93,19 +100,19 @@ export default function AdminDashboard() {
       </div>
 
       {isLoading ? (
-        <div className="text-center py-4">載入中...</div>
+        <div className="py-4 text-center">載入中...</div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {dashboardCards.map((card) => {
             const IconComponent = card.icon
             return (
               <Link key={card.title} href={card.href}>
-                <Card className="transition-colors hover:bg-accent">
+                <Card className="hover:bg-accent transition-colors">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
                       {card.title}
                     </CardTitle>
-                    <IconComponent className="h-4 w-4 text-muted-foreground" />
+                    <IconComponent className="text-muted-foreground h-4 w-4" />
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">{card.value}</div>

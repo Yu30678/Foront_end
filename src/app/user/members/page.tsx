@@ -55,8 +55,10 @@ export default function MembersPage() {
     try {
       setIsLoading(true)
       const response = await authAPI.getMembers(memberId)
-      if (response.status === 200) {
-        setMembers(Array.isArray(response.data) ? response.data : [response.data])
+      if (response.code === 200) {
+        setMembers(
+          Array.isArray(response.data) ? response.data : [response.data],
+        )
       }
     } catch (error) {
       console.error('載入會員失敗:', error)
@@ -78,7 +80,7 @@ export default function MembersPage() {
       } else {
         await authAPI.createMember(memberData)
       }
-      
+
       setIsDialogOpen(false)
       resetForm()
       loadMembers()
@@ -226,9 +228,7 @@ export default function MembersPage() {
                 >
                   取消
                 </Button>
-                <Button type="submit">
-                  {editingMember ? '更新' : '新增'}
-                </Button>
+                <Button type="submit">{editingMember ? '更新' : '新增'}</Button>
               </div>
             </form>
           </DialogContent>
@@ -264,7 +264,7 @@ export default function MembersPage() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="text-center py-4">載入中...</div>
+            <div className="py-4 text-center">載入中...</div>
           ) : (
             <Table>
               <TableHeader>
@@ -282,14 +282,12 @@ export default function MembersPage() {
                 {members.map((member) => (
                   <TableRow key={member.member_id}>
                     <TableCell>{member.member_id}</TableCell>
-                    <TableCell className="font-medium">
-                      {member.name}
-                    </TableCell>
+                    <TableCell className="font-medium">{member.name}</TableCell>
                     <TableCell>{member.email}</TableCell>
                     <TableCell>{member.phone}</TableCell>
                     <TableCell>{member.address}</TableCell>
                     <TableCell>{formatDate(member.create_at)}</TableCell>
-                    <TableCell className="text-right space-x-2">
+                    <TableCell className="space-x-2 text-right">
                       <Button
                         variant="outline"
                         size="sm"

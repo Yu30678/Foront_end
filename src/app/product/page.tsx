@@ -37,8 +37,12 @@ export default function ProductPage() {
     try {
       setIsLoading(true)
       const response = await productAPI.getProducts()
-      if (response.status === 200) {
-        setProducts(response.data.filter((product: Product) => product.is_active))
+      if (response.code === 200) {
+        setProducts(
+          (response.data as Product[]).filter(
+            (product: Product) => product.is_active,
+          ),
+        )
       }
     } catch (error) {
       console.error('載入商品失敗:', error)
@@ -85,16 +89,16 @@ export default function ProductPage() {
   }
 
   return (
-    <div className="container mx-auto py-8 space-y-6">
+    <div className="container mx-auto space-y-6 py-8">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">商品列表</h1>
         <Badge variant="outline">{products.length} 個商品</Badge>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {products.map((product) => (
           <Card key={product.product_id} className="overflow-hidden">
-            <div className="aspect-square relative">
+            <div className="relative aspect-square">
               {product.image_url ? (
                 <Image
                   src={product.image_url}
@@ -103,7 +107,7 @@ export default function ProductPage() {
                   className="object-cover"
                 />
               ) : (
-                <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                <div className="flex h-full w-full items-center justify-center bg-gray-200">
                   <span className="text-gray-500">無圖片</span>
                 </div>
               )}
@@ -156,7 +160,7 @@ export default function ProductPage() {
       </div>
 
       {products.length === 0 && (
-        <div className="text-center py-12">
+        <div className="py-12 text-center">
           <p className="text-gray-500">目前沒有可用的商品</p>
         </div>
       )}

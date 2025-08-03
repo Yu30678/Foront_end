@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -35,27 +35,27 @@ export default function CartPage() {
   const { authState } = useAuth()
   const router = useRouter()
 
-  useEffect(() => {
-    if (authState.isLoggedIn && authState.userType === 'member') {
-      loadCart()
-    } else {
-      setIsLoading(false)
-    }
-  }, [authState])
-
-  const loadCart = async () => {
+  const loadCart = useCallback(async () => {
     try {
       setIsLoading(true)
       const response = await cartAPI.getCart(authState.user?.member_id || 0)
-      if (response.status === 200) {
-        setCartItems(response.data || [])
+      if (response.code === 200) {
+        setCartItems((response.data as CartItem[]) || [])
       }
     } catch (error) {
       console.error('載入購物車失敗:', error)
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [authState.user?.member_id])
+
+  useEffect(() => {
+    if (authState.isLoggedIn && authState.userType === 'member') {
+      loadCart()
+    } else {
+      setIsLoading(false)
+    }
+  }, [authState, loadCart])
 
   const updateQuantity = async (productId: number, quantity: number) => {
     if (quantity <= 0) return
@@ -98,7 +98,7 @@ export default function CartPage() {
         member_id: authState.user?.member_id || 0,
       })
 
-      if (response.status === 200) {
+      if (response.code === 200) {
         alert('結帳完成！訂單已建立成功，即將跳轉到訂單頁面')
         setTimeout(() => {
           router.push('/order')

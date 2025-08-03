@@ -43,8 +43,8 @@ export default function CategoriesPage() {
     try {
       setIsLoading(true)
       const response = await categoryAPI.getCategories()
-      if (response.status === 200) {
-        setCategories(response.data)
+      if (response.code === 200) {
+        setCategories(response.data as Category[])
       }
     } catch (error) {
       console.error('載入類別失敗:', error)
@@ -153,7 +153,7 @@ export default function CategoriesPage() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="text-center py-4">載入中...</div>
+            <div className="py-4 text-center">載入中...</div>
           ) : (
             <Table>
               <TableHeader>
@@ -170,7 +170,7 @@ export default function CategoriesPage() {
                     <TableCell className="font-medium">
                       {category.name}
                     </TableCell>
-                    <TableCell className="text-right space-x-2">
+                    <TableCell className="space-x-2 text-right">
                       <Button
                         variant="outline"
                         size="sm"

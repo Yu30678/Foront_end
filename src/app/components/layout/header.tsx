@@ -50,7 +50,7 @@ const adminLoginSchema = z.object({
 type LoginType = 'member' | 'admin'
 type FormType = 'login' | 'register'
 
-const getNavItems = (userType: string | undefined) => {
+const getNavItems = (userType: 'admin' | 'member' | null) => {
   const baseItems = [
     { label: '首頁', href: '/' },
     { label: '產品', href: '/product' },
@@ -409,7 +409,7 @@ export const Header = () => {
       <header className="flex items-center justify-between p-4">
         <NavigationMenu>
           <NavigationMenuList>
-            {getNavItems(undefined).map((item) => (
+            {getNavItems(null).map((item) => (
               <NavigationMenuItem key={item.label}>
                 <NavigationMenuLink asChild>
                   <Link href={item.href}>{item.label}</Link>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -47,26 +47,21 @@ export default function MemberPage() {
   const { authState, logout } = useAuth()
   const router = useRouter()
 
-  useEffect(() => {
-    if (authState.isLoggedIn && authState.userType === 'member') {
-      loadMemberData()
-    } else {
-      setIsLoading(false)
-    }
-  }, [authState])
-
-  const loadMemberData = async () => {
+  const loadMemberData = useCallback(async () => {
     try {
       setIsLoading(true)
-      const response = await memberAPI.getMemberData(authState.user?.member_id || 0)
-      
-      if (response.status === 200) {
-        setMemberData(response.data)
+      const response = await memberAPI.getMemberData(
+        authState.user?.member_id || 0,
+      )
+
+      if (response.code === 200) {
+        const memberData = response.data as Member
+        setMemberData(memberData)
         setFormData({
-          name: response.data.name,
-          email: response.data.email,
-          phone: response.data.phone,
-          address: response.data.address,
+          name: memberData.name,
+          email: memberData.email,
+          phone: memberData.phone,
+          address: memberData.address,
         })
       }
     } catch (error) {
@@ -74,7 +69,15 @@ export default function MemberPage() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [authState.user?.member_id])
+
+  useEffect(() => {
+    if (authState.isLoggedIn && authState.userType === 'member') {
+      loadMemberData()
+    } else {
+      setIsLoading(false)
+    }
+  }, [authState, loadMemberData])
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -85,8 +88,8 @@ export default function MemberPage() {
         ...formData,
       })
 
-      if (response.status === 200) {
-        setMemberData(response.data)
+      if (response.code === 200) {
+        setMemberData(response.data as Member)
         setIsEditDialogOpen(false)
         alert('會員資料更新成功')
       } else {
@@ -108,7 +111,7 @@ export default function MemberPage() {
         member_id: memberData?.member_id,
       })
 
-      if (response.status === 200) {
+      if (response.code === 200) {
         alert('會員帳號已刪除')
         logout()
         router.push('/')
@@ -123,7 +126,7 @@ export default function MemberPage() {
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       alert('新密碼與確認密碼不符')
       return
@@ -142,7 +145,7 @@ export default function MemberPage() {
         new_password: passwordData.newPassword,
       })
 
-      if (response.status === 200) {
+      if (response.code === 200) {
         alert('密碼修改成功')
         setIsPasswordDialogOpen(false)
         setPasswordData({
@@ -173,8 +176,8 @@ export default function MemberPage() {
     return (
       <div className="container mx-auto py-8">
         <Card>
-          <CardContent className="text-center py-12">
-            <User className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+          <CardContent className="py-12 text-center">
+            <User className="mx-auto mb-4 h-12 w-12 text-gray-400" />
             <p className="text-gray-500">請先登入會員帳號</p>
             <Button className="mt-4" onClick={() => router.push('/')}>
               回到首頁
@@ -194,7 +197,7 @@ export default function MemberPage() {
   }
 
   return (
-    <div className="container mx-auto py-8 space-y-6">
+    <div className="container mx-auto space-y-6 py-8">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">會員中心</h1>
         <Badge variant="outline">
@@ -204,7 +207,7 @@ export default function MemberPage() {
       </div>
 
       {memberData && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2">
             <Card>
               <CardHeader>
@@ -213,28 +216,42 @@ export default function MemberPage() {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-sm font-medium text-gray-600">姓名</Label>
+                    <Label className="text-sm font-medium text-gray-600">
+                      姓名
+                    </Label>
                     <p className="text-lg">{memberData.name}</p>
                   </div>
                   <div>
-                    <Label className="text-sm font-medium text-gray-600">會員編號</Label>
+                    <Label className="text-sm font-medium text-gray-600">
+                      會員編號
+                    </Label>
                     <p className="text-lg">#{memberData.member_id}</p>
                   </div>
                   <div>
-                    <Label className="text-sm font-medium text-gray-600">電子郵件</Label>
+                    <Label className="text-sm font-medium text-gray-600">
+                      電子郵件
+                    </Label>
                     <p className="text-lg">{memberData.email}</p>
                   </div>
                   <div>
-                    <Label className="text-sm font-medium text-gray-600">電話</Label>
+                    <Label className="text-sm font-medium text-gray-600">
+                      電話
+                    </Label>
                     <p className="text-lg">{memberData.phone}</p>
                   </div>
                   <div className="col-span-2">
-                    <Label className="text-sm font-medium text-gray-600">地址</Label>
+                    <Label className="text-sm font-medium text-gray-600">
+                      地址
+                    </Label>
                     <p className="text-lg">{memberData.address}</p>
                   </div>
                   <div>
-                    <Label className="text-sm font-medium text-gray-600">註冊日期</Label>
-                    <p className="text-lg">{formatDate(memberData.create_at)}</p>
+                    <Label className="text-sm font-medium text-gray-600">
+                      註冊日期
+                    </Label>
+                    <p className="text-lg">
+                      {formatDate(memberData.create_at)}
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -247,7 +264,10 @@ export default function MemberPage() {
                 <CardTitle>帳號管理</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+                <Dialog
+                  open={isEditDialogOpen}
+                  onOpenChange={setIsEditDialogOpen}
+                >
                   <DialogTrigger asChild>
                     <Button className="w-full" variant="outline">
                       <Edit className="mr-2 h-4 w-4" />
@@ -299,7 +319,10 @@ export default function MemberPage() {
                           id="address"
                           value={formData.address}
                           onChange={(e) =>
-                            setFormData({ ...formData, address: e.target.value })
+                            setFormData({
+                              ...formData,
+                              address: e.target.value,
+                            })
                           }
                           required
                         />
@@ -320,7 +343,10 @@ export default function MemberPage() {
                   </DialogContent>
                 </Dialog>
 
-                <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
+                <Dialog
+                  open={isPasswordDialogOpen}
+                  onOpenChange={setIsPasswordDialogOpen}
+                >
                   <DialogTrigger asChild>
                     <Button className="w-full" variant="outline">
                       <Key className="mr-2 h-4 w-4" />
@@ -339,7 +365,10 @@ export default function MemberPage() {
                           type="password"
                           value={passwordData.oldPassword}
                           onChange={(e) =>
-                            setPasswordData({ ...passwordData, oldPassword: e.target.value })
+                            setPasswordData({
+                              ...passwordData,
+                              oldPassword: e.target.value,
+                            })
                           }
                           required
                         />
@@ -351,7 +380,10 @@ export default function MemberPage() {
                           type="password"
                           value={passwordData.newPassword}
                           onChange={(e) =>
-                            setPasswordData({ ...passwordData, newPassword: e.target.value })
+                            setPasswordData({
+                              ...passwordData,
+                              newPassword: e.target.value,
+                            })
                           }
                           required
                           minLength={4}
@@ -364,7 +396,10 @@ export default function MemberPage() {
                           type="password"
                           value={passwordData.confirmPassword}
                           onChange={(e) =>
-                            setPasswordData({ ...passwordData, confirmPassword: e.target.value })
+                            setPasswordData({
+                              ...passwordData,
+                              confirmPassword: e.target.value,
+                            })
                           }
                           required
                           minLength={4}

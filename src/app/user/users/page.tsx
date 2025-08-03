@@ -58,7 +58,9 @@ export default function UsersPage() {
     try {
       setIsLoading(true)
       // 使用真實的後端 API
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/users`)
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/user/users`,
+      )
       const result = await response.json()
       if (result.status === 200) {
         setUsers(result.data)
@@ -78,13 +80,16 @@ export default function UsersPage() {
         ...(editingUser && { userId: editingUser.userId }),
       }
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/users`, {
-        method: editingUser ? 'PUT' : 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/user/users`,
+        {
+          method: editingUser ? 'PUT' : 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(userData),
         },
-        body: JSON.stringify(userData),
-      })
+      )
 
       const result = await response.json()
       if (result.status === 200 || result.status === 201) {
@@ -116,13 +121,16 @@ export default function UsersPage() {
     if (!confirm('確定要刪除此管理員嗎？')) return
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/users`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/user/users`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId: userId }),
         },
-        body: JSON.stringify({ userId: userId }),
-      })
+      )
 
       const result = await response.json()
       if (result.status === 200) {
@@ -250,9 +258,7 @@ export default function UsersPage() {
                 >
                   取消
                 </Button>
-                <Button type="submit">
-                  {editingUser ? '更新' : '新增'}
-                </Button>
+                <Button type="submit">{editingUser ? '更新' : '新增'}</Button>
               </div>
             </form>
           </DialogContent>
@@ -268,7 +274,7 @@ export default function UsersPage() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="text-center py-4">載入中...</div>
+            <div className="py-4 text-center">載入中...</div>
           ) : (
             <Table>
               <TableHeader>
@@ -289,7 +295,7 @@ export default function UsersPage() {
                     </TableCell>
                     <TableCell>{user.name}</TableCell>
                     <TableCell>{getLevelBadge(user.level)}</TableCell>
-                    <TableCell className="text-right space-x-2">
+                    <TableCell className="space-x-2 text-right">
                       <Button
                         variant="outline"
                         size="sm"

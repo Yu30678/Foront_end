@@ -37,14 +37,14 @@ export async function GET() {
       ],
       message: '成功取得管理員列表',
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         status: 500,
         data: null,
         message: '伺服器錯誤',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -53,14 +53,19 @@ export async function POST(request: NextRequest) {
   try {
     const body: User = await request.json()
 
-    if (!body.account || !body.password || !body.name || body.level === undefined) {
+    if (
+      !body.account ||
+      !body.password ||
+      !body.name ||
+      body.level === undefined
+    ) {
       return NextResponse.json(
         {
           status: 400,
           data: null,
           message: '所有欄位皆為必填',
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -77,14 +82,14 @@ export async function POST(request: NextRequest) {
       data: newUser,
       message: '管理員新增成功',
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         status: 500,
         data: null,
         message: '伺服器錯誤',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -100,7 +105,7 @@ export async function PUT(request: NextRequest) {
           data: null,
           message: '管理員編號為必填',
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -117,14 +122,14 @@ export async function PUT(request: NextRequest) {
       data: updatedUser,
       message: '管理員更新成功',
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         status: 500,
         data: null,
         message: '伺服器錯誤',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -140,7 +145,7 @@ export async function DELETE(request: NextRequest) {
           data: null,
           message: '管理員編號為必填',
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -149,14 +154,14 @@ export async function DELETE(request: NextRequest) {
       data: { userId: body.userId },
       message: '管理員刪除成功',
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         status: 500,
         data: null,
         message: '伺服器錯誤',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

@@ -16,10 +16,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
 import { Eye, Search } from 'lucide-react'
 import { orderAPI } from '@/lib/api'
 
@@ -53,8 +51,8 @@ export default function OrdersPage() {
     try {
       setIsLoading(true)
       const response = await orderAPI.getOrders(memberId)
-      if (response.status === 200) {
-        setOrders(response.data)
+      if (response.code === 200) {
+        setOrders(response.data as Order[])
       }
     } catch (error) {
       console.error('載入訂單失敗:', error)
@@ -85,7 +83,6 @@ export default function OrdersPage() {
       minute: '2-digit',
     })
   }
-
 
   return (
     <div className="space-y-6">
@@ -122,7 +119,7 @@ export default function OrdersPage() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="text-center py-4">載入中...</div>
+            <div className="py-4 text-center">載入中...</div>
           ) : (
             <Table>
               <TableHeader>
@@ -141,7 +138,9 @@ export default function OrdersPage() {
                       #{order.order_id}
                     </TableCell>
                     <TableCell>{order.member_id}</TableCell>
-                    <TableCell>NT$ {order.total_amount.toLocaleString()}</TableCell>
+                    <TableCell>
+                      NT$ {order.total_amount.toLocaleString()}
+                    </TableCell>
                     <TableCell>{formatDate(order.create_at)}</TableCell>
                     <TableCell className="text-right">
                       <Button
@@ -163,9 +162,7 @@ export default function OrdersPage() {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>
-              訂單詳情 #{selectedOrder?.order_id}
-            </DialogTitle>
+            <DialogTitle>訂單詳情 #{selectedOrder?.order_id}</DialogTitle>
           </DialogHeader>
           {selectedOrder && (
             <div className="space-y-4">
@@ -176,48 +173,56 @@ export default function OrdersPage() {
                 </div>
                 <div>
                   <p className="text-sm font-medium">建立時間</p>
-                  <p className="text-lg">{formatDate(selectedOrder.create_at)}</p>
+                  <p className="text-lg">
+                    {formatDate(selectedOrder.create_at)}
+                  </p>
                 </div>
                 <div className="col-span-2">
                   <p className="text-sm font-medium">總金額</p>
-                  <p className="text-lg">NT$ {selectedOrder.total_amount.toLocaleString()}</p>
+                  <p className="text-lg">
+                    NT$ {selectedOrder.total_amount.toLocaleString()}
+                  </p>
                 </div>
               </div>
 
-              {selectedOrder.order_details && selectedOrder.order_details.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-medium mb-2">訂單明細</h3>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>商品編號</TableHead>
-                        <TableHead>商品名稱</TableHead>
-                        <TableHead>數量</TableHead>
-                        <TableHead>單價</TableHead>
-                        <TableHead className="text-right">小計</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {selectedOrder.order_details.map((detail, index) => (
-                        <TableRow key={index}>
-                          <TableCell>{detail.product_id}</TableCell>
-                          <TableCell>{detail.product_name}</TableCell>
-                          <TableCell>{detail.quantity}</TableCell>
-                          <TableCell>NT$ {Number(detail.price).toLocaleString()}</TableCell>
-                          <TableCell className="text-right">
-                            NT$ {(Number(detail.price) * detail.quantity).toLocaleString()}
-                          </TableCell>
+              {selectedOrder.order_details &&
+                selectedOrder.order_details.length > 0 && (
+                  <div>
+                    <h3 className="mb-2 text-lg font-medium">訂單明細</h3>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>商品編號</TableHead>
+                          <TableHead>商品名稱</TableHead>
+                          <TableHead>數量</TableHead>
+                          <TableHead>單價</TableHead>
+                          <TableHead className="text-right">小計</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              )}
+                      </TableHeader>
+                      <TableBody>
+                        {selectedOrder.order_details.map((detail, index) => (
+                          <TableRow key={index}>
+                            <TableCell>{detail.product_id}</TableCell>
+                            <TableCell>{detail.product_name}</TableCell>
+                            <TableCell>{detail.quantity}</TableCell>
+                            <TableCell>
+                              NT$ {Number(detail.price).toLocaleString()}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              NT${' '}
+                              {(
+                                Number(detail.price) * detail.quantity
+                              ).toLocaleString()}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
 
               <div className="flex justify-end">
-                <Button onClick={() => setIsDialogOpen(false)}>
-                  關閉
-                </Button>
+                <Button onClick={() => setIsDialogOpen(false)}>關閉</Button>
               </div>
             </div>
           )}
